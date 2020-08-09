@@ -1,9 +1,9 @@
 # Sampling for fewshot
 
 Sample efficiently in meta-training (not random-sampling, but sampling-method).
-'''
+```
 file: `few_shot/core.py`
-'''
+```
 
 This project is written in python 3.6 and Pytorch and assumes you have
 a GPU.
