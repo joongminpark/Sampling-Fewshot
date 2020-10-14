@@ -37,12 +37,12 @@ I'm using the miniImagenet splits defined here: https://github.com/twitter/meta-
 
 ### Results
 
-The file `experiments/matching_nets.py` contains the hyperparameters I
+The file `experiments/matching_nets.py`, `experiments/proto_nets.py`, `experiments/relation_nets.py` contains the hyperparameters I
 used to obtain the results given below.
 
 ### Inference
 
-Run `inference/matching_infer.py` in the root directory to run
+Run `inference/matching_infer.py`, `inference/proto_infer.py`, `inference/relation_infer.py` in the root directory to run
 all tests.
 
 

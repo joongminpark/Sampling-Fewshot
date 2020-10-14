@@ -114,7 +114,7 @@ class ImportanceSampler(Sampler):
                     support_train_features = torch.stack(support_train_features)
                     support_train_features = support_train_features.double().cuda()
 
-                    train_embeddings = self.model.encoder(support_train_features)      # shape: (num_sample*k, 1600)
+                    train_embeddings = self.model(support_train_features)      # shape: (num_sample*k, 1600)
                     
                     # (2) get feature for each label (train support set) using mean vector by manifold space
                     # DO: Each num_sample -> average
@@ -155,16 +155,16 @@ class ImportanceSampler(Sampler):
                 '''
 
                 if self.is_diversity:
-                    supports_sampling_rate = softmax_with_temperature(diversity, 1)
+                    supports_sampling_rate = softmax_with_temperature(diversity, 1.0)
                 else:
                     similarity = (-1 * diversity)
-                    supports_sampling_rate = softmax_with_temperature(similarity, 1)
+                    supports_sampling_rate = softmax_with_temperature(similarity, 1.0)
 
                 
                 support_choice = np.random.choice(
                     list(range(self.num_s_candidates)),
                     size=1, replace=False,
-                    p=supports_sampling_rate
+                    p=supports_sampling_rate.astype(np.float64)
                 )
 
                 support_candidates_id = support_candidates[support_choice[0]]

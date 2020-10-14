@@ -29,11 +29,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model_path", type=str,
-        default="./models/matching_nets/miniImageNet_n=1_k=5_q=15_nv=1_kv=5_qv=15_dist=cosine_fce=True_sampling_method=True_is_diversity=True_epi_candidate=20.pth", 
+        default="./models/matching_nets/miniImageNet_n=5_k=5_q=10_nv=5_kv=5_qv=10_dist=cosine_fce=True_sampling_method=False_is_diversity=None_epi_candidate=20.pth", 
         help="model path")
     parser.add_argument(
         "--result_path", type=str,
-        default="./results/matching_nets/miniImageNet_n=1_k=5_q=15_nv=1_kv=5_qv=15_dist=cosine_fce=True_sampling_method=True_is_diversity=True_epi_candidate=20.csv",
+        default="./results/matching_nets/5shot_training_5shot_inference_randomsampling.csv",
         help="Directory for evaluation report result (for experiments)")
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--fce', type=lambda x: x.lower()[0] == 't') 

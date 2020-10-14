@@ -249,3 +249,76 @@ class AttentionLSTM(nn.Module):
         h = h_hat + queries
 
         return h
+
+
+###### Relation network ######
+class GetPreRelationEncoder(nn.Module):
+    """Module for extracting feature before Relation Module"""
+    def __init__(self, num_input_channels, out_channels):
+        super(GetPreRelationEncoder, self).__init__()
+        self.conv_block1 = nn.Sequential(
+                        nn.Conv2d(num_input_channels, out_channels, kernel_size=3, padding=0),
+                        nn.BatchNorm2d(out_channels, momentum=1, affine=True),
+                        nn.ReLU(),
+                        nn.MaxPool2d(2))
+        self.conv_block2 = nn.Sequential(
+                        nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=0),
+                        nn.BatchNorm2d(out_channels, momentum=1, affine=True),
+                        nn.ReLU(),
+                        nn.MaxPool2d(2))
+        self.conv_block3 = nn.Sequential(
+                        nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
+                        nn.BatchNorm2d(out_channels, momentum=1, affine=True),
+                        nn.ReLU())
+        self.conv_block4 = nn.Sequential(
+                        nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
+                        nn.BatchNorm2d(out_channels, momentum=1, affine=True),
+                        nn.ReLU())
+
+    def forward(self,x):
+        out = self.conv_block1(x)
+        out = self.conv_block2(out)
+        out = self.conv_block3(out)
+        out = self.conv_block4(out)
+
+        return out
+
+
+class RelationModule(nn.Module):
+    """Module for Relation Networks"""
+    def __init__(self, out_channels, relation_dim):
+        super(RelationModule, self).__init__()
+        self.conv_block1 = nn.Sequential(
+                        nn.Conv2d(out_channels * 2, out_channels, kernel_size=3, padding=0),
+                        nn.BatchNorm2d(out_channels, momentum=1, affine=True),
+                        nn.ReLU(),
+                        nn.MaxPool2d(2))
+        self.conv_block2 = nn.Sequential(
+                        nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=0),
+                        nn.BatchNorm2d(out_channels, momentum=1, affine=True),
+                        nn.ReLU(),
+                        nn.MaxPool2d(2))
+        self.fc1 = nn.Linear(out_channels * 3 * 3, relation_dim)
+        self.fc2 = nn.Linear(relation_dim, 1)
+
+    def forward(self,x):
+        out = self.conv_block1(x)
+        out = self.conv_block2(out)
+        out = out.view(out.size(0), -1)
+        out = F.relu(self.fc1(out))
+        out = torch.sigmoid(self.fc2(out))
+
+        return out
+
+
+class RelationNetwork(nn.Module):
+    def __init__(self, num_input_channels: int, out_channels: int, relation_dim: int):
+        super(RelationNetwork, self).__init__()
+        self.encoder = GetPreRelationEncoder(num_input_channels, out_channels)
+        self.relation = RelationModule(out_channels, relation_dim)
+
+        # Use it when appling sampling-method
+        self.encoder_2d = nn.Sequential(self.encoder, Flatten())
+
+    def forward(self, inputs):
+        pass
